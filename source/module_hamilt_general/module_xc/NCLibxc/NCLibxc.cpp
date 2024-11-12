@@ -7,6 +7,7 @@
   module load gcc/7.3.0-wzm
  g++ -std=c++17 -o my_program NCLibxc.cpp LebedevGrid.cpp interface_to_libxc.cpp -I/public1/soft/libxc/install/include -L/public1/soft/libxc/install/lib -lxc
 */
+#ifdef USE_LIBXC
 #include "NCLibxc.h"
 #include "interface_to_libxc.h"
 #include <iostream>
@@ -309,3 +310,4 @@ int main()
 }
 */
 
+#endif // USE_LIBXC

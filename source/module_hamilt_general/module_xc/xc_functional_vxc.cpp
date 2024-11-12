@@ -10,8 +10,8 @@
 #include "module_parameter/parameter.h"
 
 #ifdef USE_LIBXC
-#include "xc_functional_libxc.h"
 #include "NCLibxc/NCLibxc.h"
+#include "xc_functional_libxc.h"
 #include <tuple>
 #include <iostream>
 #include <vector>
@@ -179,40 +179,45 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional::v_xc(
     if (PARAM.inp.nspin == 4 && PARAM.inp.multicolin == 1
         && (func_type == 0 || func_type == 1) )
     { // noncollinear case added by Xiaoyu Zhang, Peking University, 2024.10.02.  multicollinear method for lda Since NCLibxc needs libxc, this part codes will not be used.
-        NCLibxc::print_NCLibxc();
-#ifdef _OPENMP
-#pragma omp parallel for reduction(+:etxc) reduction(+:vtxc)
-#endif
-        for(int ir = 0;ir<nrxx; ir++)
-        {
-            if(!use_libxc){
-                std::cerr << "Error: Multi-collinear approach does not support running without Libxc." << std::endl;
-                std::exit(EXIT_FAILURE);
-            }
-            double exc = 0.0;
-            for(int ipol=0;ipol<4;ipol++){
-                v(ipol, ir) = 0;
-            }
-            NCLibxc nc_libxc;
-            std::vector<double> n = {chr->rho[0][ir] + chr->rho_core[ir]};
-            std::vector<double> mx = {chr->rho[1][ir]};
-            std::vector<double> my = {chr->rho[2][ir]};
-            std::vector<double> mz = {chr->rho[3][ir]};
-            double amag = sqrt( pow(chr->rho[1][ir],2) + pow(chr->rho[2][ir],2) + pow(chr->rho[3][ir],2) );
-            if (n[0] - amag <= 0.0) { //ensure the rhoup and rhodn to libxc are positive
-                continue;
-            }
-            for(const int &id : func_id){
-                auto [E_MC, V_MC] = NCLibxc::lda_mc(id, n, mx, my, mz);
-                exc = e2*E_MC[0];
-                v(0, ir) += std::real(e2*(V_MC[0][0][0]+V_MC[0][1][1])/two);
-                v(1, ir) += std::real(e2*(V_MC[0][0][1]+V_MC[0][1][0])/two);
-                v(2, ir) += std::real(e2*(V_MC[0][1][0]-V_MC[0][0][1])/twoi);
-                v(3, ir) += std::real(e2*(V_MC[0][0][0]-V_MC[0][1][1])/two);
-                etxc += exc * n[0];
-                vtxc += v(0, ir) * chr->rho[0][ir] + v(1, ir) * chr->rho[1][ir] + v(2, ir) * chr->rho[2][ir] + v(3, ir) * chr->rho[3][ir];
-            }
-        }
+
+        std::cerr << "Error: Multi-collinear approach does not support running without Libxc." << std::endl;
+        std::exit(EXIT_FAILURE);
+//        NCLibxc::print_NCLibxc();
+//#ifdef _OPENMP
+//#pragma omp parallel for reduction(+:etxc) reduction(+:vtxc)
+//#endif
+//        for(int ir = 0;ir<nrxx; ir++)
+//        {
+//            if(!use_libxc){
+//                std::cerr << "Error: Multi-collinear approach does not support running without Libxc." << std::endl;
+//                std::exit(EXIT_FAILURE);
+//            }
+//            double exc = 0.0;
+//            for(int ipol=0;ipol<4;ipol++){
+//                v(ipol, ir) = 0;
+//            }
+//
+//            std::vector<double> n = {chr->rho[0][ir] + chr->rho_core[ir]};
+//            std::vector<double> mx = {chr->rho[1][ir]};
+//            std::vector<double> my = {chr->rho[2][ir]};
+//            std::vector<double> mz = {chr->rho[3][ir]};
+//            double amag = sqrt( pow(chr->rho[1][ir],2) + pow(chr->rho[2][ir],2) + pow(chr->rho[3][ir],2) );
+//            if (n[0] - amag <= 0.0) { //ensure the rhoup and rhodn to libxc are positive
+//                continue;
+//            }
+//            std::vector<double> E_MC;
+//            std::vector<Matrix2x2> V_MC;
+//            for(const int &id : func_id){
+//                std::tie(E_MC, V_MC) = NCLibxc::lda_mc(id, n, mx, my, mz);
+//                exc = e2*E_MC[0];
+//                v(0, ir) += std::real(e2*(V_MC[0][0][0]+V_MC[0][1][1])/two);
+//                v(1, ir) += std::real(e2*(V_MC[0][0][1]+V_MC[0][1][0])/two);
+//                v(2, ir) += std::real(e2*(V_MC[0][1][0]-V_MC[0][0][1])/twoi);
+//                v(3, ir) += std::real(e2*(V_MC[0][0][0]-V_MC[0][1][1])/two);
+//                etxc += exc * n[0];
+//                vtxc += v(0, ir) * chr->rho[0][ir] + v(1, ir) * chr->rho[1][ir] + v(2, ir) * chr->rho[2][ir] + v(3, ir) * chr->rho[3][ir];
+//            }
+//        }
     }
    
 
@@ -224,7 +229,7 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional::v_xc(
     std::vector<double> dum;
     if(PARAM.inp.nspin == 4 && PARAM.inp.multicolin == 1) {
         if(func_type == 2 || func_type == 3) {
-            NCLibxc::print_NCLibxc();
+            //NCLibxc::print_NCLibxc();
         }
         if(func_type == 4 || func_type == 5) {
             std::cerr << "Error: Multi-collinear approach hasn't support hybrid functioanl yet" << std::endl;

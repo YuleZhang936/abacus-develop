@@ -3,6 +3,8 @@
 #ifndef INTERFACE_TO_LIBXC_H
 #define INTERFACE_TO_LIBXC_H
 
+#ifdef USE_LIBXC
+
 #include <xc.h>
 #include <vector>
 #include <stdexcept>
@@ -74,5 +76,7 @@ public:
     void example_gga_spin();
     void example_mgga_spin();
 };
+
+#endif // USE_LIBXC
 
 #endif // INTERFACE_TO_LIBXC_H

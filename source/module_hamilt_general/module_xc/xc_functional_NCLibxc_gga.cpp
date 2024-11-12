@@ -2,6 +2,9 @@
 // This file is for implementing multi-collinear appraoch for GGA functionals.
 // NCLibxc package only completes multi-collienar approach for LDA functionals, because the GGA functionals need gradient that is entangled with ABACUS.
 //Ref: PHYSICAL REVIEW RESEARCH 5, 013036 (2023)
+
+#ifdef USE_LIBXC
+
 #include "xc_functional.h"
 #include "module_base/parallel_reduce.h"
 #include "module_base/timer.h"
@@ -243,3 +246,5 @@ std::pair<std::vector<double>, std::vector<Matrix2x2>> XC_Functional::gga_mc(int
 
     return {E, V};
 }
+
+#endif // USE_LIBXC

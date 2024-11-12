@@ -7,6 +7,9 @@
 //  ./my_program
 
 // func_id can be found in the libxc website https://libxc.gitlab.io/functionals/
+
+#ifdef USE_LIBXC
+
 #include "interface_to_libxc.h"
 #include <iostream>
 
@@ -1046,4 +1049,4 @@ int main()
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
+#endif // USE_LIBXC

@@ -152,8 +152,11 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
                      if (n[0] - amag <= 0.0) { //ensure the rhoup and rhodn to libxc are positive
                         continue;
                     }
+                    std::vector<double> E_MC;
+                    std::vector<Matrix2x2> V_MC;
                    for(const int &id : func_id){
-                        auto [E_MC, V_MC] = NCLibxc::lda_mc(id, n, mx, my, mz);
+                        //auto [E_MC, V_MC] = NCLibxc::lda_mc(id, n, mx, my, mz);
+                       std::tie(E_MC, V_MC) = NCLibxc::lda_mc(id, n, mx, my, mz);
                         exc = e2*E_MC[0];
                         v_nspin4(0, ir) += std::real(e2*(V_MC[0][0][0]+V_MC[0][1][1])/two);
                         v_nspin4(1, ir) += std::real(e2*(V_MC[0][0][1]+V_MC[0][1][0])/two);
@@ -189,8 +192,11 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
         //        }
         //    }
 
+                std::vector<double> E_MC;
+                std::vector<Matrix2x2> V_MC;
                 for (const int& id : func_id) {
-                    auto [E_MC, V_MC] = XC_Functional::gga_mc(id, n, mx, my, mz, chr, tpiba);
+                    //auto [E_MC, V_MC] = XC_Functional::gga_mc(id, n, mx, my, mz, chr, tpiba);
+                    std::tie(E_MC, V_MC) = XC_Functional::gga_mc(id, n, mx, my, mz, chr, tpiba);
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static, 1024) reduction(+:etxc) reduction(+:vtxc)
 #endif

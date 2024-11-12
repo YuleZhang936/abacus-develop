@@ -1,6 +1,8 @@
 #ifndef NCLIBXC_H
 #define NCLIBXC_H
 
+#ifdef USE_LIBXC
+
 #include <vector>
 #include <array>
 #include <complex>
@@ -50,5 +52,6 @@ public:
 // 声明 MakeAngularGrid 函数
 std::vector<std::array<double, 4>> MakeAngularGrid(int grid_level);
 
+#endif // USE_LIBXC
 
 #endif // NCLIBXC_H
