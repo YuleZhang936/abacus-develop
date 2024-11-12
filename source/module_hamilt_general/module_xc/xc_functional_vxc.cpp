@@ -11,6 +11,16 @@
 
 #ifdef USE_LIBXC
 #include "xc_functional_libxc.h"
+#include "NCLibxc/NCLibxc.h"
+#include <tuple>
+#include <iostream>
+#include <vector>
+#include <array>
+#include <cmath>
+#include <complex>
+#include <iomanip>
+#include <xc.h>
+#include <stdexcept>
 #endif
 
 // [etxc, vtxc, v] = XC_Functional::v_xc(...)
@@ -39,6 +49,8 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional::v_xc(
     // the square of the e charge
     // in Rydeberg unit, so * 2.0.
     double e2 = 2.0;
+    std::complex<double> twoi(0.0, 2.0);
+    std::complex<double> two(2.0, 0.0);
 
     double vanishing_charge = 1.0e-10;
 
@@ -104,8 +116,8 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional::v_xc(
             }
         }
     }
-    else if(PARAM.inp.nspin == 4)//noncollinear case added by zhengdy
-    {
+    else if(PARAM.inp.nspin == 4 && PARAM.inp.multicolin == 0)
+    { //noncollinear case (Kubler's locally collinear) added by zhengdy
 #ifdef _OPENMP
 #pragma omp parallel for reduction(+:etxc) reduction(+:vtxc)
 #endif
@@ -164,13 +176,63 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional::v_xc(
     }//end if
     // energy terms, local-density contributions
 
+    if (PARAM.inp.nspin == 4 && PARAM.inp.multicolin == 1
+        && (func_type == 0 || func_type == 1) )
+    { // noncollinear case added by Xiaoyu Zhang, Peking University, 2024.10.02.  multicollinear method for lda Since NCLibxc needs libxc, this part codes will not be used.
+        NCLibxc::print_NCLibxc();
+#ifdef _OPENMP
+#pragma omp parallel for reduction(+:etxc) reduction(+:vtxc)
+#endif
+        for(int ir = 0;ir<nrxx; ir++)
+        {
+            if(!use_libxc){
+                std::cerr << "Error: Multi-collinear approach does not support running without Libxc." << std::endl;
+                std::exit(EXIT_FAILURE);
+            }
+            double exc = 0.0;
+            for(int ipol=0;ipol<4;ipol++){
+                v(ipol, ir) = 0;
+            }
+            NCLibxc nc_libxc;
+            std::vector<double> n = {chr->rho[0][ir] + chr->rho_core[ir]};
+            std::vector<double> mx = {chr->rho[1][ir]};
+            std::vector<double> my = {chr->rho[2][ir]};
+            std::vector<double> mz = {chr->rho[3][ir]};
+            double amag = sqrt( pow(chr->rho[1][ir],2) + pow(chr->rho[2][ir],2) + pow(chr->rho[3][ir],2) );
+            if (n[0] - amag <= 0.0) { //ensure the rhoup and rhodn to libxc are positive
+                continue;
+            }
+            for(const int &id : func_id){
+                auto [E_MC, V_MC] = NCLibxc::lda_mc(id, n, mx, my, mz);
+                exc = e2*E_MC[0];
+                v(0, ir) += std::real(e2*(V_MC[0][0][0]+V_MC[0][1][1])/two);
+                v(1, ir) += std::real(e2*(V_MC[0][0][1]+V_MC[0][1][0])/two);
+                v(2, ir) += std::real(e2*(V_MC[0][1][0]-V_MC[0][0][1])/twoi);
+                v(3, ir) += std::real(e2*(V_MC[0][0][0]-V_MC[0][1][1])/two);
+                etxc += exc * n[0];
+                vtxc += v(0, ir) * chr->rho[0][ir] + v(1, ir) * chr->rho[1][ir] + v(2, ir) * chr->rho[2][ir] + v(3, ir) * chr->rho[3][ir];
+            }
+        }
+    }
+   
+
     // add gradient corrections (if any)
     // mohan modify 2009-12-15
 
     // the dummy variable dum contains gradient correction to stress
     // which is not used here
     std::vector<double> dum;
-    gradcorr(etxc, vtxc, v, chr, chr->rhopw, ucell, dum);
+    if(PARAM.inp.nspin == 4 && PARAM.inp.multicolin == 1) {
+        if(func_type == 2 || func_type == 3) {
+            NCLibxc::print_NCLibxc();
+        }
+        if(func_type == 4 || func_type == 5) {
+            std::cerr << "Error: Multi-collinear approach hasn't support hybrid functioanl yet" << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+    } else {
+        gradcorr(etxc, vtxc, v, chr, chr->rhopw, ucell, dum);
+    }
 
     // parallel code : collect vtxc,etxc
     // mohan add 2008-06-01

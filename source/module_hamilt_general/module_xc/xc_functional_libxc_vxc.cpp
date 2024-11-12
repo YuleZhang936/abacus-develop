@@ -9,6 +9,8 @@
 #include "module_base/timer.h"
 #include "module_base/tool_title.h"
 
+#include "NCLibxc/NCLibxc.h"
+
 #include <xc.h>
 
 #include <vector>
@@ -122,6 +124,88 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
     if(4==PARAM.inp.nspin)
     {
         v = XC_Functional_Libxc::convert_v_nspin4(nrxx, chr, amag, v);
+        if(PARAM.inp.multicolin)//  added by Xiaoyu Zhang, Peking University, 2024.10.09.  multicollinear method 
+        {
+            ModuleBase::matrix v_nspin4(PARAM.inp.nspin, nrxx);
+            etxc=0;
+            vtxc=0;
+            std::complex<double> twoi(0.0, 2.0);
+            std::complex<double> two(2.0, 0.0);
+            double e2=2.0;
+
+            NCLibxc::print_NCLibxc();
+            if(!is_gga)
+            { //LDA 
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static, 1024) reduction(+:etxc) reduction(+:vtxc)
+#endif
+                for(int ir = 0;ir<nrxx; ++ir){
+                    double exc = 0.0;
+                    for(int ipol=0;ipol<4;++ipol){
+                        v_nspin4(ipol, ir) = 0;
+                    }
+                    std::vector<double> n = {chr->rho[0][ir] + chr->rho_core[ir]};
+                    std::vector<double> mx = {chr->rho[1][ir]};
+                    std::vector<double> my = {chr->rho[2][ir]};
+                    std::vector<double> mz = {chr->rho[3][ir]};
+                    double amag = sqrt( pow(chr->rho[1][ir],2) + pow(chr->rho[2][ir],2) + pow(chr->rho[3][ir],2) );
+                     if (n[0] - amag <= 0.0) { //ensure the rhoup and rhodn to libxc are positive
+                        continue;
+                    }
+                   for(const int &id : func_id){
+                        auto [E_MC, V_MC] = NCLibxc::lda_mc(id, n, mx, my, mz);
+                        exc = e2*E_MC[0];
+                        v_nspin4(0, ir) += std::real(e2*(V_MC[0][0][0]+V_MC[0][1][1])/two);
+                        v_nspin4(1, ir) += std::real(e2*(V_MC[0][0][1]+V_MC[0][1][0])/two);
+                        v_nspin4(2, ir) += std::real(e2*(V_MC[0][1][0]-V_MC[0][0][1])/twoi);
+                        v_nspin4(3, ir) += std::real(e2*(V_MC[0][0][0]-V_MC[0][1][1])/two);
+                        etxc += exc * n[0];
+                        vtxc += v_nspin4(0, ir) *  chr->rho[0][ir] + v_nspin4(1, ir) * mx[0] + v_nspin4(2, ir) * my[0] + v_nspin4(3, ir) * mz[0];// vtxc is used the calculation of the total energy(Ts more specifically), because abacus doesn't directly programme the kinetic operator and instead uses the sum of occupied orbital energy
+                        // the reason why i use chr->rho here is not clear. It is based on the implementation in v_xc.
+                    }
+                }   
+            }
+            else
+            { // gga
+             // 初始化所有格点的数组
+                std::vector<double> n(nrxx);
+                std::vector<double> mx(nrxx);
+                std::vector<double> my(nrxx);
+                std::vector<double> mz(nrxx);
+                std::vector<double> amag(nrxx);
+
+                for (int ir = 0; ir < nrxx; ++ir) {
+                    n[ir] = chr->rho[0][ir] + chr->rho_core[ir];
+                    mx[ir] = chr->rho[1][ir];
+                    my[ir] = chr->rho[2][ir];
+                    mz[ir] = chr->rho[3][ir];
+                    amag[ir] = sqrt(pow(chr->rho[1][ir], 2) + pow(chr->rho[2][ir], 2) + pow(chr->rho[3][ir], 2));
+                }
+
+            // 确保 rhoup 和 rhodn 为正
+           //for (int ir = 0; ir < nrxx; ++ir) {
+          //      if (n[ir] - amag[ir] <= 0.0) {
+             //       continue;
+        //        }
+        //    }
+
+                for (const int& id : func_id) {
+                    auto [E_MC, V_MC] = XC_Functional::gga_mc(id, n, mx, my, mz, chr, tpiba);
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static, 1024) reduction(+:etxc) reduction(+:vtxc)
+#endif
+                    for (int ir = 0; ir < nrxx; ++ir) {
+                        double exc = e2 * E_MC[ir];
+                        v_nspin4(0, ir) += std::real(e2 * (V_MC[ir][0][0] + V_MC[ir][1][1]) / two);
+                        v_nspin4(1, ir) += std::real(e2 * (V_MC[ir][0][1] + V_MC[ir][1][0]) / two);
+                        v_nspin4(2, ir) += std::real(e2 * (V_MC[ir][1][0] - V_MC[ir][0][1]) / twoi);
+                        v_nspin4(3, ir) += std::real(e2 * (V_MC[ir][0][0] - V_MC[ir][1][1]) / two);
+                        etxc += exc * n[ir];
+                        vtxc += v_nspin4(0, ir) * chr->rho[0][ir] + v_nspin4(1, ir) * mx[ir] + v_nspin4(2, ir) * my[ir] + v_nspin4(3, ir) * mz[ir];
+                    }
+                }
+            }
+        }
     }
 
     //-------------------------------------------------

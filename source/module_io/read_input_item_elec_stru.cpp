@@ -280,7 +280,7 @@ void ReadInput::item_elec_stru()
         item.annotation = "1: single spin; 2: up and down spin; 4: noncollinear spin";
         read_sync_int(input.nspin);
         item.reset_value = [](const Input_Item& item, Parameter& para) {
-            if (para.input.noncolin || para.input.lspinorb)
+            if (para.input.noncolin || para.input.lspinorb || para.input.multicolin)
             {
                 para.input.nspin = 4;
             }
@@ -588,6 +588,12 @@ void ReadInput::item_elec_stru()
         Input_Item item("noncolin");
         item.annotation = "using non-collinear-spin";
         read_sync_bool(input.noncolin);
+        this->add_item(item);
+    }
+    {
+        Input_Item item("multicolin");
+        item.annotation = "multi-collinear approach (in development)";
+        read_sync_bool(input.multicolin);
         this->add_item(item);
     }
     {

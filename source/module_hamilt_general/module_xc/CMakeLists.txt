@@ -17,6 +17,12 @@ add_library(
     xc_functional_libxc_wrapper_xc.cpp
     xc_functional_libxc_wrapper_gcxc.cpp
     xc_functional_libxc_wrapper_tauxc.cpp
+    NCLibxc/NCLibxc.cpp
+    NCLibxc/NCLibxc.h
+    NCLibxc/interface_to_libxc.cpp
+    NCLibxc/interface_to_libxc.h
+    NCLibxc/LebedevGrid.cpp
+    xc_functional_NCLibxc_gga.cpp
 )
 
 if(ENABLE_COVERAGE)
