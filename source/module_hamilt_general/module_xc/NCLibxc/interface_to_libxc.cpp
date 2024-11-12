@@ -445,33 +445,39 @@ LibxcInterface::~LibxcInterface()
         //        lda_lxc(rho_up, rho_down, v4rho4_1, v4rho4_2, v4rho4_3, v4rho4_4, v4rho4_5);
 
         std::cout << "Exc: ";
-        for (auto e : exc)
+        for (auto e : exc) {
             std::cout << e << " ";
+}
         std::cout << std::endl;
 
         std::cout << "VRho_1: ";
-        for (auto v : vrho_1)
+        for (auto v : vrho_1) {
             std::cout << v << " ";
+}
         std::cout << std::endl;
 
         std::cout << "VRho_2: ";
-        for (auto v : vrho_2)
+        for (auto v : vrho_2) {
             std::cout << v << " ";
+}
         std::cout << std::endl;
 
         std::cout << "V2Rho2_1: ";
-        for (auto f : v2rho2_1)
+        for (auto f : v2rho2_1) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "V2Rho2_2: ";
-        for (auto f : v2rho2_2)
+        for (auto f : v2rho2_2) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "V2Rho2_3: ";
-        for (auto f : v2rho2_3)
+        for (auto f : v2rho2_3) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         //        std::cout << "V3Rho3_1: ";
@@ -550,108 +556,129 @@ LibxcInterface::~LibxcInterface()
 
         // 输出结果
         std::cout << "GGA Exc: ";
-        for (auto e : exc)
+        for (auto e : exc) {
             std::cout << e << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA VRho_1: ";
-        for (auto v : vrho_1)
+        for (auto v : vrho_1) {
             std::cout << v << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA VRho_2: ";
-        for (auto v : vrho_2)
+        for (auto v : vrho_2) {
             std::cout << v << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA VSigma_1: ";
-        for (auto v : vsigma_1)
+        for (auto v : vsigma_1) {
             std::cout << v << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA VSigma_2: ";
-        for (auto v : vsigma_2)
+        for (auto v : vsigma_2) {
             std::cout << v << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA VSigma_3: ";
-        for (auto v : vsigma_3)
+        for (auto v : vsigma_3) {
             std::cout << v << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Rho2_1: ";
-        for (auto f : v2rho2_1)
+        for (auto f : v2rho2_1) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Rho2_2: ";
-        for (auto f : v2rho2_2)
+        for (auto f : v2rho2_2) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Rho2_3: ";
-        for (auto f : v2rho2_3)
+        for (auto f : v2rho2_3) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2RhoSigma_1: ";
-        for (auto f : v2rhosigma_1)
+        for (auto f : v2rhosigma_1) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2RhoSigma_2: ";
-        for (auto f : v2rhosigma_2)
+        for (auto f : v2rhosigma_2) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2RhoSigma_3: ";
-        for (auto f : v2rhosigma_3)
+        for (auto f : v2rhosigma_3) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2RhoSigma_4: ";
-        for (auto f : v2rhosigma_4)
+        for (auto f : v2rhosigma_4) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2RhoSigma_5: ";
-        for (auto f : v2rhosigma_5)
+        for (auto f : v2rhosigma_5) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2RhoSigma_6: ";
-        for (auto f : v2rhosigma_6)
+        for (auto f : v2rhosigma_6) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Sigma2_1: ";
-        for (auto f : v2sigma2_1)
+        for (auto f : v2sigma2_1) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Sigma2_2: ";
-        for (auto f : v2sigma2_2)
+        for (auto f : v2sigma2_2) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Sigma2_3: ";
-        for (auto f : v2sigma2_3)
+        for (auto f : v2sigma2_3) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Sigma2_4: ";
-        for (auto f : v2sigma2_4)
+        for (auto f : v2sigma2_4) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Sigma2_5: ";
-        for (auto f : v2sigma2_5)
+        for (auto f : v2sigma2_5) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
 
         std::cout << "GGA V2Sigma2_6: ";
-        for (auto f : v2sigma2_6)
+        for (auto f : v2sigma2_6) {
             std::cout << f << " ";
+}
         std::cout << std::endl;
     }
 
@@ -693,278 +720,333 @@ LibxcInterface::~LibxcInterface()
 
     // Output results
     std::cout << "MGGA Exc: ";
-    for (auto e : exc)
+    for (auto e : exc) {
         std::cout << e << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VRho_1: ";
-    for (auto v : vrho_1)
+    for (auto v : vrho_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VRho_2: ";
-    for (auto v : vrho_2)
+    for (auto v : vrho_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VSigma_1: ";
-    for (auto v : vsigma_1)
+    for (auto v : vsigma_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VSigma_2: ";
-    for (auto v : vsigma_2)
+    for (auto v : vsigma_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VSigma_3: ";
-    for (auto v : vsigma_3)
+    for (auto v : vsigma_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VLapl_1: ";
-    for (auto v : vlapl_1)
+    for (auto v : vlapl_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VLapl_2: ";
-    for (auto v : vlapl_2)
+    for (auto v : vlapl_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VTau_1: ";
-    for (auto v : vtau_1)
+    for (auto v : vtau_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA VTau_2: ";
-    for (auto v : vtau_2)
+    for (auto v : vtau_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Rho2_1: ";
-    for (auto v : v2rho2_1)
+    for (auto v : v2rho2_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Rho2_2: ";
-    for (auto v : v2rho2_2)
+    for (auto v : v2rho2_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Rho2_3: ";
-    for (auto v : v2rho2_3)
+    for (auto v : v2rho2_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoSigma_1: ";
-    for (auto v : v2rhosigma_1)
+    for (auto v : v2rhosigma_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoSigma_2: ";
-    for (auto v : v2rhosigma_2)
+    for (auto v : v2rhosigma_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoSigma_3: ";
-    for (auto v : v2rhosigma_3)
+    for (auto v : v2rhosigma_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoSigma_4: ";
-    for (auto v : v2rhosigma_4)
+    for (auto v : v2rhosigma_4) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoSigma_5: ";
-    for (auto v : v2rhosigma_5)
+    for (auto v : v2rhosigma_5) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoSigma_6: ";
-    for (auto v : v2rhosigma_6)
+    for (auto v : v2rhosigma_6) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoLapl_1: ";
-    for (auto v : v2rholapl_1)
+    for (auto v : v2rholapl_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoLapl_2: ";
-    for (auto v : v2rholapl_2)
+    for (auto v : v2rholapl_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoLapl_3: ";
-    for (auto v : v2rholapl_3)
+    for (auto v : v2rholapl_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoLapl_4: ";
-    for (auto v : v2rholapl_4)
+    for (auto v : v2rholapl_4) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoTau_1: ";
-    for (auto v : v2rhotau_1)
+    for (auto v : v2rhotau_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoTau_2: ";
-    for (auto v : v2rhotau_2)
+    for (auto v : v2rhotau_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoTau_3: ";
-    for (auto v : v2rhotau_3)
+    for (auto v : v2rhotau_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2RhoTau_4: ";
-    for (auto v : v2rhotau_4)
+    for (auto v : v2rhotau_4) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Sigma2_1: ";
-    for (auto v : v2sigma2_1)
+    for (auto v : v2sigma2_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Sigma2_2: ";
-    for (auto v : v2sigma2_2)
+    for (auto v : v2sigma2_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Sigma2_3: ";
-    for (auto v : v2sigma2_3)
+    for (auto v : v2sigma2_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Sigma2_4: ";
-    for (auto v : v2sigma2_4)
+    for (auto v : v2sigma2_4) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Sigma2_5: ";
-    for (auto v : v2sigma2_5)
+    for (auto v : v2sigma2_5) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Sigma2_6: ";
-    for (auto v : v2sigma2_6)
+    for (auto v : v2sigma2_6) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaLapl_1: ";
-    for (auto v : v2sigmalapl_1)
+    for (auto v : v2sigmalapl_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaLapl_2: ";
-    for (auto v : v2sigmalapl_2)
+    for (auto v : v2sigmalapl_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaLapl_3: ";
-    for (auto v : v2sigmalapl_3)
+    for (auto v : v2sigmalapl_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaLapl_4: ";
-    for (auto v : v2sigmalapl_4)
+    for (auto v : v2sigmalapl_4) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaLapl_5: ";
-    for (auto v : v2sigmalapl_5)
+    for (auto v : v2sigmalapl_5) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaLapl_6: ";
-    for (auto v : v2sigmalapl_6)
+    for (auto v : v2sigmalapl_6) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaTau_1: ";
-    for (auto v : v2sigmatau_1)
+    for (auto v : v2sigmatau_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaTau_2: ";
-    for (auto v : v2sigmatau_2)
+    for (auto v : v2sigmatau_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaTau_3: ";
-    for (auto v : v2sigmatau_3)
+    for (auto v : v2sigmatau_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaTau_4: ";
-    for (auto v : v2sigmatau_4)
+    for (auto v : v2sigmatau_4) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaTau_5: ";
-    for (auto v : v2sigmatau_5)
+    for (auto v : v2sigmatau_5) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2SigmaTau_6: ";
-    for (auto v : v2sigmatau_6)
+    for (auto v : v2sigmatau_6) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Lapl2_1: ";
-    for (auto v : v2lapl2_1)
+    for (auto v : v2lapl2_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Lapl2_2: ";
-    for (auto v : v2lapl2_2)
+    for (auto v : v2lapl2_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Lapl2_3: ";
-    for (auto v : v2lapl2_3)
+    for (auto v : v2lapl2_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2LaplTau_1: ";
-    for (auto v : v2lapltau_1)
+    for (auto v : v2lapltau_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2LaplTau_2: ";
-    for (auto v : v2lapltau_2)
+    for (auto v : v2lapltau_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2LaplTau_3: ";
-    for (auto v : v2lapltau_3)
+    for (auto v : v2lapltau_3) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2LaplTau_4: ";
-    for (auto v : v2lapltau_4)
+    for (auto v : v2lapltau_4) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Tau2_1: ";
-    for (auto v : v2tau2_1)
+    for (auto v : v2tau2_1) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Tau2_2: ";
-    for (auto v : v2tau2_2)
+    for (auto v : v2tau2_2) {
         std::cout << v << " ";
+}
     std::cout << std::endl;
 
     std::cout << "MGGA V2Tau2_3: ";
-    for (auto v : v2tau2_3)
+    for (auto v : v2tau2_3) {
         std::cout << v << " ";
+}
 }
 
 
