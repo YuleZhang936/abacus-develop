@@ -65,11 +65,18 @@ AddTest(
     ../xc_functional_libxc_wrapper_xc.cpp
     ../xc_functional_libxc_wrapper_gcxc.cpp
     ../xc_functional_libxc_wrapper_tauxc.cpp
+    ../NCLibxc/NCLibxc.cpp
+    ../NCLibxc/NCLibxc.h
+    ../NCLibxc/interface_to_libxc.cpp
+    ../NCLibxc/interface_to_libxc.h
+    ../NCLibxc/LebedevGrid.cpp
+    ../xc_functional_NCLibxc_gga.cpp
     ../xc_funct_corr_gga.cpp ../xc_funct_corr_lda.cpp ../xc_funct_exch_gga.cpp
     ../xc_funct_exch_lda.cpp ../xc_funct_hcth.cpp
     ../xc_functional_vxc.cpp
     ../xc_functional_libxc_vxc.cpp
     ../xc_functional_libxc_tools.cpp
+
     ../../../module_base/blas_connector.cpp
     ../../../module_base/matrix.cpp
     ../../../module_base/memory.cpp
