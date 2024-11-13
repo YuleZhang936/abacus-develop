@@ -167,9 +167,31 @@ void XC_Functional::postlibxc_gga(int xc_id, const std::vector<double>& rho_up, 
     XC_Functional::grad_dot( vec_div_H1.data(), div_div_H1.data(), chr->rhopw, tpiba);
     XC_Functional::grad_dot( vec_div_H2.data(), div_div_H2.data(), chr->rhopw, tpiba);
     XC_Functional::grad_dot( vec_div_H3.data(), div_div_H3.data(), chr->rhopw, tpiba);
-    
 
-    
+    std::vector<std::complex<double>> g_vsigma_1(chr->rhopw->npw); // temporary storage for a vector in reciprocal space
+    std::vector<std::complex<double>> g_vsigma_2(chr->rhopw->npw); // temporary storage for a vector in reciprocal space
+    std::vector<std::complex<double>> g_vsigma_3(chr->rhopw->npw); // temporary storage for a vector in reciprocal space
+
+    std::vector<ModuleBase::Vector3<double>> grad_vsigma_1(nrxx);
+    std::vector<ModuleBase::Vector3<double>> grad_vsigma_2(nrxx);
+    std::vector<ModuleBase::Vector3<double>> grad_vsigma_3(nrxx);
+
+    chr->rhopw->real2recip(vsigma_1.data(), g_vsigma_1.data());
+    XC_Functional::grad_rho(g_vsigma_1.data(), grad_vsigma_1.data(), chr->rhopw, tpiba);
+    chr->rhopw->real2recip(vsigma_2.data(), g_vsigma_2.data());
+    XC_Functional::grad_rho(g_vsigma_2.data(), grad_vsigma_2.data(), chr->rhopw, tpiba);
+    chr->rhopw->real2recip(vsigma_3.data(), g_vsigma_3.data());
+    XC_Functional::grad_rho(g_vsigma_3.data(), grad_vsigma_3.data(), chr->rhopw, tpiba);
+
+    std::vector<double> div_grad_vsigma_1(nrxx);
+    std::vector<double> div_grad_vsigma_2(nrxx);
+    std::vector<double> div_grad_vsigma_3(nrxx);
+
+    XC_Functional::grad_dot( grad_vsigma_1.data(), div_grad_vsigma_1.data(), chr->rhopw, tpiba);
+    XC_Functional::grad_dot( grad_vsigma_2.data(), div_grad_vsigma_2.data(), chr->rhopw, tpiba);
+    XC_Functional::grad_dot( grad_vsigma_3.data(), div_grad_vsigma_3.data(), chr->rhopw, tpiba);
+
+
     e.resize(rho_up.size());
     v1.resize(rho_up.size());
     v2.resize(rho_down.size());
@@ -183,9 +205,9 @@ void XC_Functional::postlibxc_gga(int xc_id, const std::vector<double>& rho_up, 
         e[i] = exc[i] ; 
         v1[i] = vrho_1[i]-div_hup[i] ; 
         v2[i] = vrho_2[i]-div_hdn[i] ; 
-        f1[i] = v2rho2_1[i]-2.0*div_h1[i]+div_div_H1[i] ; 
-        f2[i] = v2rho2_2[i]-div_h2[i]+div_div_H2[i] ; 
-        f3[i] = v2rho2_3[i]-2.0*div_h3[i]+div_div_H3[i] ; 
+        f1[i] = v2rho2_1[i]-2.0*div_h1[i]+div_div_H1[i]-2.0*div_grad_vsigma_1[i] ; 
+        f2[i] = v2rho2_2[i]-div_h2[i]+div_div_H2[i] - div_grad_vsigma_2[i] ; 
+        f3[i] = v2rho2_3[i]-2.0*div_h3[i]+div_div_H3[i]-2.0*div_grad_vsigma_3[i] ; 
     }
 }
 
