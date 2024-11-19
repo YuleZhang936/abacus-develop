@@ -209,6 +209,19 @@ void XC_Functional::postlibxc_gga(int xc_id, const std::vector<double>& rho_up, 
         f2[i] = v2rho2_2[i]-div_h2[i]+div_div_H2[i] - div_grad_vsigma_2[i] ; 
         f3[i] = v2rho2_3[i]-2.0*div_h3[i]+div_div_H3[i]-2.0*div_grad_vsigma_3[i] ; 
     }
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static, 1024)
+#endif 
+    for (size_t i = 0; i < rho_up.size(); ++i) {
+        if (rho_up[i] <= 0.0 || rho_down[i] <= 0.0) {
+            e[i] = 0.0;
+            v1[i] = 0.0;
+            v2[i] = 0.0;
+            f1[i] = 0.0;
+            f2[i] = 0.0;
+            f3[i] = 0.0;
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -254,8 +267,12 @@ std::pair<std::vector<double>, std::vector<Matrix2x2>> XC_Functional::gga_mc(int
 
         for (size_t i = 0; i < num_points; ++i)
         {
-            Eeff[i] = e[i] + 0.5 * (m_omega[i] / n[i]) * (v1[i] - v2[i]);
-
+            if (n[i] == 0.0){
+                Eeff[i] = 0.0;
+            }
+            else{
+                Eeff[i] = e[i] + 0.5 * (m_omega[i] / n[i]) * (v1[i] - v2[i]);
+            }
             Matrix2x2 pauli_matrix = NCLibxc::construct_pauli_matrix(x, y, z);
             Matrix2x2 term1 = NCLibxc::scalar_multiply(((v1[i] - v2[i]) + 0.25 * m_omega[i] * (f1[i] + f3[i] - 2 * f2[i])), pauli_matrix);
             Matrix2x2 term2 = NCLibxc::scalar_multiply((0.5 * (v1[i] + v2[i]) + 0.25 * m_omega[i] * (f1[i] - f3[i])), NCLibxc::identity_matrix());
