@@ -26,7 +26,7 @@ std::vector<std::array<double, 4>> MakeAngularGrid(int grid_level);
 //Matrix
 
 
-// 初始化 Pauli 矩阵
+// intialized Pauli matrices
 const Matrix2x2 NCLibxc::sigma_x = {{{std::complex<double>(0.0, 0.0), std::complex<double>(1.0, 0.0)},
                             {std::complex<double>(1.0, 0.0), std::complex<double>(0.0, 0.0)}}};
 
@@ -36,7 +36,6 @@ const Matrix2x2 NCLibxc::sigma_y = {{{std::complex<double>(0.0, 0.0), std::compl
 const Matrix2x2 NCLibxc::sigma_z = {{{std::complex<double>(1.0, 0.0), std::complex<double>(0.0, 0.0)},
                             {std::complex<double>(0.0, 0.0), std::complex<double>(-1.0, 0.0)}}};
 
-// 矩阵加法
 Matrix2x2 NCLibxc::add(const Matrix2x2 &a, const Matrix2x2 &b)
 {
     Matrix2x2 result;
@@ -50,7 +49,6 @@ Matrix2x2 NCLibxc::add(const Matrix2x2 &a, const Matrix2x2 &b)
     return result;
 }
 
-// 矩阵数乘
 Matrix2x2 NCLibxc::scalar_multiply(const std::complex<double> &scalar, const Matrix2x2 &matrix)
 {
     Matrix2x2 result;
@@ -65,7 +63,6 @@ Matrix2x2 NCLibxc::scalar_multiply(const std::complex<double> &scalar, const Mat
 }
 
 
-// 根据直角坐标构建 Pauli 自旋矩阵
 Matrix2x2 NCLibxc::construct_pauli_matrix(double x, double y, double z)
 {
     Matrix2x2 pauli_matrix = add(add(scalar_multiply(x, sigma_x), scalar_multiply(y, sigma_y)), scalar_multiply(z, sigma_z));
@@ -126,7 +123,6 @@ void NCLibxc::postlibxc_lda(int xc_id, const std::vector<double>& rho_up, const 
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-// lda_mc函数，输入是xc_id, n, mx, my, mz，返回每个实空间格点的E和V
 std::pair<std::vector<double>, std::vector<Matrix2x2>> NCLibxc::lda_mc(int xc_id, const std::vector<double>& n, 
                                                               const std::vector<double>& mx, const std::vector<double>& my, const std::vector<double>& mz)
 {
@@ -172,7 +168,6 @@ std::pair<std::vector<double>, std::vector<Matrix2x2>> NCLibxc::lda_mc(int xc_id
             Matrix2x2 term2 = scalar_multiply((0.5 * (v1[i] + v2[i]) + 0.25 * m_omega[i] * (f1[i] - f3[i])), identity_matrix());
             Veff[i] = add(term1, term2);
 
-            // 将 Eeff 和 Veff 加到 E 和 V 上，乘权重
             E[i] += Eeff[i]*w;
             V[i] = add(V[i], scalar_multiply(w, Veff[i]));
         }
@@ -181,7 +176,6 @@ std::pair<std::vector<double>, std::vector<Matrix2x2>> NCLibxc::lda_mc(int xc_id
     return {E, V};
 }
 
-// lda_lc函数，输入是xc_id, n, mx, my, mz，返回每个实空间格点的E和V
 std::pair<std::vector<double>, std::vector<Matrix2x2>> NCLibxc::lda_lc(int xc_id, const std::vector<double>& n, 
                                                               const std::vector<double>& mx, const std::vector<double>& my, const std::vector<double>& mz)
 {
@@ -190,13 +184,12 @@ std::pair<std::vector<double>, std::vector<Matrix2x2>> NCLibxc::lda_lc(int xc_id
     std::vector<Matrix2x2> V(num_points, {{{0.0, 0.0}, {0.0, 0.0}}});
     std::vector<double> m_mod(num_points, 0.0);
 
-    // 计算m_mod，这是m的模长
+    // compute |m|
     for (size_t i = 0; i < num_points; ++i)
     {
         m_mod[i] = std::sqrt(mx[i] * mx[i] + my[i] * my[i] + mz[i] * mz[i]);
     }
 
-    // 计算rho_up和rho_down
     std::vector<double> rho_up(num_points, 0.0);
     std::vector<double> rho_down(num_points, 0.0);
 
@@ -206,21 +199,17 @@ std::pair<std::vector<double>, std::vector<Matrix2x2>> NCLibxc::lda_lc(int xc_id
         rho_down[i] = (n[i] - m_mod[i]) / 2.0;
     }
 
-    // 调用postlibxc_lda函数
     std::vector<double> e(num_points, 0.0), v1(num_points, 0.0), v2(num_points, 0.0), f1(num_points, 0.0), f2(num_points, 0.0), f3(num_points, 0.0);
     postlibxc_lda(xc_id, rho_up, rho_down, e, v1, v2, f1, f2, f3);
 
-    // 计算E和V
     for (size_t i = 0; i < num_points; ++i)
     {
         E[i] = e[i];
 
-        // 计算 x, y, z
         double x = mx[i] / m_mod[i];
         double y = my[i] / m_mod[i];
         double z = mz[i] / m_mod[i];
 
-        // 构建 Pauli 矩阵
         Matrix2x2 pauli_matrix = construct_pauli_matrix(x, y, z);
         Matrix2x2 term1 = scalar_multiply(0.5 * (v1[i] - v2[i]), pauli_matrix);
         Matrix2x2 term2 = scalar_multiply(0.5 * (v1[i] + v2[i]), identity_matrix());
@@ -252,12 +241,12 @@ int main()
 {
     try 
     {
-        // 示例输入数据
+        // example input data
         std::vector<double> n = {1.0, 1.0, 1.0};
         std::vector<double> mx = {0.1, 0.1, 0.0};
         std::vector<double> my = {0.0, 0.1, 0.1414};
         std::vector<double> mz = {0.1, 0.0, 0.0};
-        int xc_id = 1; // 例如，设置xc_id为1
+        int xc_id = 1;
 
         auto [E_MC, V_MC] = lda_mc(xc_id, n, mx, my, mz);
 

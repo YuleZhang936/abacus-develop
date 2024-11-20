@@ -170,7 +170,6 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
             }
             else
             { // gga
-             // 初始化所有格点的数组
                 std::vector<double> n(nrxx);
                 std::vector<double> mx(nrxx);
                 std::vector<double> my(nrxx);
@@ -185,17 +184,9 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
                     amag[ir] = sqrt(pow(chr->rho[1][ir], 2) + pow(chr->rho[2][ir], 2) + pow(chr->rho[3][ir], 2));
                 }
 
-            // 确保 rhoup 和 rhodn 为正
-           //for (int ir = 0; ir < nrxx; ++ir) {
-          //      if (n[ir] - amag[ir] <= 0.0) {
-             //       continue;
-        //        }
-        //    }
-
                 std::vector<double> E_MC;
                 std::vector<Matrix2x2> V_MC;
                 for (const int& id : func_id) {
-                    //auto [E_MC, V_MC] = XC_Functional::gga_mc(id, n, mx, my, mz, chr, tpiba);
                     std::tie(E_MC, V_MC) = XC_Functional::gga_mc(id, n, mx, my, mz, chr, tpiba);
 #ifdef _OPENMP
 #pragma omp parallel for schedule(static, 1024) reduction(+:etxc) reduction(+:vtxc)

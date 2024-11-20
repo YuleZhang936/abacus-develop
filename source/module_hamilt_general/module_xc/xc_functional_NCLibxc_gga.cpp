@@ -241,7 +241,7 @@ std::pair<std::vector<double>, std::vector<Matrix2x2>> XC_Functional::gga_mc(int
     std::vector<Matrix2x2> V(num_points, {{{0.0, 0.0}, {0.0, 0.0}}});
     
 
-    for (size_t j = 0; j < grids.size(); ++j) // 遍历 grids 的索引
+    for (size_t j = 0; j < grids.size(); ++j) // Lebedev quadrature
     {
         double x = grids[j][0];
         double y = grids[j][1];

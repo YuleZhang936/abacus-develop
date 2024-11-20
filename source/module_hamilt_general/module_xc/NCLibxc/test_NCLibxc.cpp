@@ -17,17 +17,15 @@
 int main() {
     try {
         NCLibxc::print_NCLibxc();
-        // 示例输入数据
+        // sample input data
         std::vector<double> n = {1.0, 1.0, 1.0};
         std::vector<double> mx = {0.1, 0.1, 0.0};
         std::vector<double> my = {0.0, 0.1, 0.1414};
         std::vector<double> mz = {0.1, 0.0, 0.0};
-        int xc_id = 1; // 例如，设置xc_id为1
+        int xc_id = 1; //
 
-        // 调用 lda_mc 函数
         auto [E_MC, V_MC] = NCLibxc::lda_mc(xc_id, n, mx, my, mz);
 
-        // 输出结果
         std::cout << "Total E for each real-space grid point:" << std::endl;
         for (const auto &e : E_MC)
             std::cout << e << " ";
