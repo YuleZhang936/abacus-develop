@@ -36,12 +36,12 @@ list(APPEND objects
 if(ENABLE_LCAO)
   list(APPEND objects
       elecstate_lcao.cpp
-      elecstate_lcao_tddft.cpp
       elecstate_lcao_cal_tau.cpp
       potentials/H_TDDFT_pw.cpp
       module_dm/density_matrix.cpp
       module_dm/density_matrix_io.cpp
       module_dm/cal_dm_psi.cpp
+      module_dm/cal_edm_tddft.cpp
   )
 endif()
 
