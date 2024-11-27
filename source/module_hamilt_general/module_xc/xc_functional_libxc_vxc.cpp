@@ -122,11 +122,14 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
     } // end for( xc_func_type &func : funcs )
 
     if(4==PARAM.inp.nspin)
-    {
-        v = XC_Functional_Libxc::convert_v_nspin4(nrxx, chr, amag, v);
-        if(PARAM.inp.multicolin)//  added by Xiaoyu Zhang, Peking University, 2024.10.09.  multicollinear method 
+    { 
+        if(!PARAM.inp.multicolin) // Kubler's locally collinear method
         {
-            ModuleBase::matrix v_nspin4(PARAM.inp.nspin, nrxx);
+            v = XC_Functional_Libxc::convert_v_nspin4(nrxx, chr, amag, v);
+        }
+        else // added by Xiaoyu Zhang, Peking University, 2024.10.09.  multicollinear method 
+        {
+            v.create(4, nrxx, true);
             etxc=0;
             vtxc=0;
             std::complex<double> twoi(0.0, 2.0);
@@ -142,7 +145,7 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
                 for(int ir = 0;ir<nrxx; ++ir){
                     double exc = 0.0;
                     for(int ipol=0;ipol<4;++ipol){
-                        v_nspin4(ipol, ir) = 0;
+                        v(ipol, ir) = 0;
                     }
                     std::vector<double> n = {chr->rho[0][ir] + chr->rho_core[ir]};
                     std::vector<double> mx = {chr->rho[1][ir]};
@@ -155,15 +158,14 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
                     std::vector<double> E_MC;
                     std::vector<Matrix2x2> V_MC;
                    for(const int &id : func_id){
-                        //auto [E_MC, V_MC] = NCLibxc::lda_mc(id, n, mx, my, mz);
                        std::tie(E_MC, V_MC) = NCLibxc::lda_mc(id, n, mx, my, mz);
                         exc = e2*E_MC[0];
-                        v_nspin4(0, ir) += std::real(e2*(V_MC[0][0][0]+V_MC[0][1][1])/two);
-                        v_nspin4(1, ir) += std::real(e2*(V_MC[0][0][1]+V_MC[0][1][0])/two);
-                        v_nspin4(2, ir) += std::real(e2*(V_MC[0][1][0]-V_MC[0][0][1])/twoi);
-                        v_nspin4(3, ir) += std::real(e2*(V_MC[0][0][0]-V_MC[0][1][1])/two);
+                        v(0, ir) += std::real(e2*(V_MC[0][0][0]+V_MC[0][1][1])/two);
+                        v(1, ir) += std::real(e2*(V_MC[0][0][1]+V_MC[0][1][0])/two);
+                        v(2, ir) += std::real(e2*(V_MC[0][1][0]-V_MC[0][0][1])/twoi);
+                        v(3, ir) += std::real(e2*(V_MC[0][0][0]-V_MC[0][1][1])/two);
                         etxc += exc * n[0];
-                        vtxc += v_nspin4(0, ir) *  chr->rho[0][ir] + v_nspin4(1, ir) * mx[0] + v_nspin4(2, ir) * my[0] + v_nspin4(3, ir) * mz[0];// vtxc is used the calculation of the total energy(Ts more specifically), because abacus doesn't directly programme the kinetic operator and instead uses the sum of occupied orbital energy
+                        vtxc += v(0, ir) *  chr->rho[0][ir] + v(1, ir) * mx[0] + v(2, ir) * my[0] + v(3, ir) * mz[0];// vtxc is used the calculation of the total energy(Ts more specifically), because abacus doesn't directly programme the kinetic operator and instead uses the sum of occupied orbital energy
                         // the reason why i use chr->rho here is not clear. It is based on the implementation in v_xc.
                     }
                 }   
@@ -193,12 +195,12 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
 #endif
                     for (int ir = 0; ir < nrxx; ++ir) {
                         double exc = e2 * E_MC[ir];
-                        v_nspin4(0, ir) += std::real(e2 * (V_MC[ir][0][0] + V_MC[ir][1][1]) / two);
-                        v_nspin4(1, ir) += std::real(e2 * (V_MC[ir][0][1] + V_MC[ir][1][0]) / two);
-                        v_nspin4(2, ir) += std::real(e2 * (V_MC[ir][1][0] - V_MC[ir][0][1]) / twoi);
-                        v_nspin4(3, ir) += std::real(e2 * (V_MC[ir][0][0] - V_MC[ir][1][1]) / two);
+                        v(0, ir) += std::real(e2 * (V_MC[ir][0][0] + V_MC[ir][1][1]) / two);
+                        v(1, ir) += std::real(e2 * (V_MC[ir][0][1] + V_MC[ir][1][0]) / two);
+                        v(2, ir) += std::real(e2 * (V_MC[ir][1][0] - V_MC[ir][0][1]) / twoi);
+                        v(3, ir) += std::real(e2 * (V_MC[ir][0][0] - V_MC[ir][1][1]) / two);
                         etxc += exc * n[ir];
-                        vtxc += v_nspin4(0, ir) * chr->rho[0][ir] + v_nspin4(1, ir) * mx[ir] + v_nspin4(2, ir) * my[ir] + v_nspin4(3, ir) * mz[ir];
+                        vtxc += v(0, ir) * chr->rho[0][ir] + v(1, ir) * mx[ir] + v(2, ir) * my[ir] + v(3, ir) * mz[ir];
                     }
                 }
             }
