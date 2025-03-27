@@ -17,20 +17,6 @@ add_library(
     xc_functional_libxc_wrapper_xc.cpp
     xc_functional_libxc_wrapper_gcxc.cpp
     xc_functional_libxc_wrapper_tauxc.cpp
-    NCLibxc/NCLibxc.cpp
-    NCLibxc/NCLibxc.h
-    NCLibxc/interface_to_libxc.cpp
-    NCLibxc/interface_to_libxc.h
-    NCLibxc/LebedevGrid.cpp
-    NCLibxc/FibonacciGrid.cpp
-    NCLibxc/FibonacciGrid.h
-    NCLibxc/benchmark_tests.cpp
-    NCLibxc/gga.cpp
-    NCLibxc/lda.cpp
-    NCLibxc/mgga.cpp
-    NCLibxc/math.cpp
-    NCLibxc/print.cpp
-    NCLibxc/torque.cpp
 )
 
 if(ENABLE_COVERAGE)
