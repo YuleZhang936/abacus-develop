@@ -9,7 +9,7 @@
 #include "module_base/timer.h"
 #include "module_base/tool_title.h"
 
-#include "NCLibxc.h"
+#include "NCLibxc/NCLibxc.h"
 
 #include <xc.h>
 

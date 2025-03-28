@@ -41,6 +41,8 @@ option(ENABLE_PEXSI "Enable support for PEXSI." OFF)
 option(ENABLE_CUSOLVERMP "Enable cusolvermp." OFF)
 option(USE_DSP "Enable DSP usage." OFF)
 
+option(ENABLE_NCLIBXC "Enable NCLibxc." OFF)
+
 # enable json support
 if(ENABLE_RAPIDJSON)
   find_package(RapidJSON)
@@ -587,6 +589,31 @@ if(ENABLE_LIBXC)
   target_link_libraries(${ABACUS_BIN_NAME} Libxc::xc)
   include_directories(${Libxc_INCLUDE_DIRS})
   add_compile_definitions(USE_LIBXC)
+endif()
+
+if(ENABLE_NCLIBXC)
+  set(NCLIBXC_ROOT "/home/itztony/Documents/Research/ABACUS_Tests_Issues/Non_collinear_example/dynamic_linked_version/NCXC")
+  set(NCLIBXC_INCLUDE_DIR "${NCLIBXC_ROOT}")
+  set(NCLIBXC_LIBRARY "${NCLIBXC_ROOT}/NCLibxc/build/libNCLibxc.so")
+
+  if(NOT EXISTS "${NCLIBXC_INCLUDE_DIR}/NCLibxc/NCLibxc.h")
+    message(FATAL_ERROR "NCLibxc.h not found at ${NCLIBXC_INCLUDE_DIR}")
+  endif()
+  if(NOT EXISTS "${NCLIBXC_LIBRARY}")
+    message(FATAL_ERROR "NCLibxc library not found at ${NCLIBXC_LIBRARY}")
+  endif()
+
+  include_directories(${NCLIBXC_INCLUDE_DIR})
+  target_link_libraries(${ABACUS_BIN_NAME} ${NCLIBXC_LIBRARY})
+  
+  if(NOT ENABLE_LIBXC)
+    find_package(Libxc REQUIRED)
+    target_link_libraries(${ABACUS_BIN_NAME} Libxc::xc)
+    include_directories(${Libxc_INCLUDE_DIRS})
+  endif()
+
+  add_compile_definitions(USE_NCLIBXC)
+  message(STATUS "Found NCLibxc: headers at ${NCLIBXC_INCLUDE_DIR}, library at ${NCLIBXC_LIBRARY}")
 endif()
 
 if(DEFINED DeePMD_DIR)
