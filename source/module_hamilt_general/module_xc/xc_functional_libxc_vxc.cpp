@@ -661,42 +661,249 @@ std::tuple<double,double,ModuleBase::matrix> XC_Functional_Libxc::v_xc_libxc(		/
 
 
 
-                std::vector<double> E_MC;
-                std::vector<Matrix2x2> V_MC;
-                
-                for (const int& id : func_id) {
-                    std::tie(E_MC, V_MC) = NCLibxc::gga_mc(
-    id, 
-    n, mx, my, mz,
-    gradx_n, grady_n, gradz_n,
-    gradx_mx, grady_mx, gradz_mx,
-    gradx_my, grady_my, gradz_my,
-    gradx_mz, grady_mz, gradz_mz,
-    grad2xx_n, grad2yy_n, grad2zz_n,
-    grad2xy_n, grad2yz_n, grad2xz_n,
-    grad2xx_mx, grad2yy_mx, grad2zz_mx,
-    grad2xy_mx, grad2yz_mx, grad2xz_mx,
-    grad2xx_my, grad2yy_my, grad2zz_my,
-    grad2xy_my, grad2yz_my, grad2xz_my,
-    grad2xx_mz, grad2yy_mz, grad2zz_mz,
-    grad2xy_mz, grad2yz_mz, grad2xz_mz,
-    grad3xxx_n, grad3xxy_n, grad3xxz_n,
-    grad3xyy_n, grad3xyz_n, grad3xzz_n,
-    grad3yyy_n, grad3yyz_n, grad3yzz_n,
-    grad3zzz_n,
-    grad3xxx_mx, grad3xxy_mx, grad3xxz_mx,
-    grad3xyy_mx, grad3xyz_mx, grad3xzz_mx,
-    grad3yyy_mx, grad3yyz_mx, grad3yzz_mx,
-    grad3zzz_mx,
-    grad3xxx_my, grad3xxy_my, grad3xxz_my,
-    grad3xyy_my, grad3xyz_my, grad3xzz_my,
-    grad3yyy_my, grad3yyz_my, grad3yzz_my,
-    grad3zzz_my,
-    grad3xxx_mz, grad3xxy_mz, grad3xxz_mz,
-    grad3xyy_mz, grad3xyz_mz, grad3xzz_mz,
-    grad3yyy_mz, grad3yyz_mz, grad3yzz_mz,
-    grad3zzz_mz
-);
+// Initialize output vectors with proper size
+std::vector<double> E_MC(nrxx);
+std::vector<Matrix2x2> V_MC(nrxx);
+
+for (const int& id : func_id) {
+    // Process each functional ID
+    #ifdef _OPENMP
+    // Divide the work among threads
+    #pragma omp parallel
+    {
+        int nthreads = omp_get_num_threads();
+        int tid = omp_get_thread_num();
+        
+        // Calculate this thread's chunk of points
+        int points_per_thread = (nrxx + nthreads - 1) / nthreads; // Ceiling division
+        int start = tid * points_per_thread;
+        int end = std::min(start + points_per_thread, nrxx);
+        int chunk_size = end - start;
+        
+        if (chunk_size > 0) {
+            // Create vectors for this thread's chunk
+            std::vector<double> n_local(chunk_size);
+            std::vector<double> mx_local(chunk_size);
+            std::vector<double> my_local(chunk_size);
+            std::vector<double> mz_local(chunk_size);
+            std::vector<double> gradx_n_local(chunk_size);
+            std::vector<double> grady_n_local(chunk_size);
+            std::vector<double> gradz_n_local(chunk_size);
+            std::vector<double> gradx_mx_local(chunk_size);
+            std::vector<double> grady_mx_local(chunk_size);
+            std::vector<double> gradz_mx_local(chunk_size);
+            std::vector<double> gradx_my_local(chunk_size);
+            std::vector<double> grady_my_local(chunk_size);
+            std::vector<double> gradz_my_local(chunk_size);
+            std::vector<double> gradx_mz_local(chunk_size);
+            std::vector<double> grady_mz_local(chunk_size);
+            std::vector<double> gradz_mz_local(chunk_size);
+            std::vector<double> grad2xx_n_local(chunk_size);
+            std::vector<double> grad2yy_n_local(chunk_size);
+            std::vector<double> grad2zz_n_local(chunk_size);
+            std::vector<double> grad2xy_n_local(chunk_size);
+            std::vector<double> grad2yz_n_local(chunk_size);
+            std::vector<double> grad2xz_n_local(chunk_size);
+            std::vector<double> grad2xx_mx_local(chunk_size);
+            std::vector<double> grad2yy_mx_local(chunk_size);
+            std::vector<double> grad2zz_mx_local(chunk_size);
+            std::vector<double> grad2xy_mx_local(chunk_size);
+            std::vector<double> grad2yz_mx_local(chunk_size);
+            std::vector<double> grad2xz_mx_local(chunk_size);
+            std::vector<double> grad2xx_my_local(chunk_size);
+            std::vector<double> grad2yy_my_local(chunk_size);
+            std::vector<double> grad2zz_my_local(chunk_size);
+            std::vector<double> grad2xy_my_local(chunk_size);
+            std::vector<double> grad2yz_my_local(chunk_size);
+            std::vector<double> grad2xz_my_local(chunk_size);
+            std::vector<double> grad2xx_mz_local(chunk_size);
+            std::vector<double> grad2yy_mz_local(chunk_size);
+            std::vector<double> grad2zz_mz_local(chunk_size);
+            std::vector<double> grad2xy_mz_local(chunk_size);
+            std::vector<double> grad2yz_mz_local(chunk_size);
+            std::vector<double> grad2xz_mz_local(chunk_size);
+            std::vector<double> grad3xxx_n_local(chunk_size);
+            std::vector<double> grad3xxy_n_local(chunk_size);
+            std::vector<double> grad3xxz_n_local(chunk_size);
+            std::vector<double> grad3xyy_n_local(chunk_size);
+            std::vector<double> grad3xyz_n_local(chunk_size);
+            std::vector<double> grad3xzz_n_local(chunk_size);
+            std::vector<double> grad3yyy_n_local(chunk_size);
+            std::vector<double> grad3yyz_n_local(chunk_size);
+            std::vector<double> grad3yzz_n_local(chunk_size);
+            std::vector<double> grad3zzz_n_local(chunk_size);
+            std::vector<double> grad3xxx_mx_local(chunk_size);
+            std::vector<double> grad3xxy_mx_local(chunk_size);
+            std::vector<double> grad3xxz_mx_local(chunk_size);
+            std::vector<double> grad3xyy_mx_local(chunk_size);
+            std::vector<double> grad3xyz_mx_local(chunk_size);
+            std::vector<double> grad3xzz_mx_local(chunk_size);
+            std::vector<double> grad3yyy_mx_local(chunk_size);
+            std::vector<double> grad3yyz_mx_local(chunk_size);
+            std::vector<double> grad3yzz_mx_local(chunk_size);
+            std::vector<double> grad3zzz_mx_local(chunk_size);
+            std::vector<double> grad3xxx_my_local(chunk_size);
+            std::vector<double> grad3xxy_my_local(chunk_size);
+            std::vector<double> grad3xxz_my_local(chunk_size);
+            std::vector<double> grad3xyy_my_local(chunk_size);
+            std::vector<double> grad3xyz_my_local(chunk_size);
+            std::vector<double> grad3xzz_my_local(chunk_size);
+            std::vector<double> grad3yyy_my_local(chunk_size);
+            std::vector<double> grad3yyz_my_local(chunk_size);
+            std::vector<double> grad3yzz_my_local(chunk_size);
+            std::vector<double> grad3zzz_my_local(chunk_size);
+            std::vector<double> grad3xxx_mz_local(chunk_size);
+            std::vector<double> grad3xxy_mz_local(chunk_size);
+            std::vector<double> grad3xxz_mz_local(chunk_size);
+            std::vector<double> grad3xyy_mz_local(chunk_size);
+            std::vector<double> grad3xyz_mz_local(chunk_size);
+            std::vector<double> grad3xzz_mz_local(chunk_size);
+            std::vector<double> grad3yyy_mz_local(chunk_size);
+            std::vector<double> grad3yyz_mz_local(chunk_size);
+            std::vector<double> grad3yzz_mz_local(chunk_size);
+            std::vector<double> grad3zzz_mz_local(chunk_size);
+
+            // Copy input data for this thread's chunk
+            for (int i = 0; i < chunk_size; i++) {
+                int ir = start + i;
+                n_local[i] = n[ir];
+                mx_local[i] = mx[ir];
+                my_local[i] = my[ir];
+                mz_local[i] = mz[ir];
+                gradx_n_local[i] = gradx_n[ir];
+                grady_n_local[i] = grady_n[ir];
+                gradz_n_local[i] = gradz_n[ir];
+                gradx_mx_local[i] = gradx_mx[ir];
+                grady_mx_local[i] = grady_mx[ir];
+                gradz_mx_local[i] = gradz_mx[ir];
+                gradx_my_local[i] = gradx_my[ir];
+                grady_my_local[i] = grady_my[ir];
+                gradz_my_local[i] = gradz_my[ir];
+                gradx_mz_local[i] = gradx_mz[ir];
+                grady_mz_local[i] = grady_mz[ir];
+                gradz_mz_local[i] = gradz_mz[ir];
+                grad2xx_n_local[i] = grad2xx_n[ir];
+                grad2yy_n_local[i] = grad2yy_n[ir];
+                grad2zz_n_local[i] = grad2zz_n[ir];
+                grad2xy_n_local[i] = grad2xy_n[ir];
+                grad2yz_n_local[i] = grad2yz_n[ir];
+                grad2xz_n_local[i] = grad2xz_n[ir];
+                grad2xx_mx_local[i] = grad2xx_mx[ir];
+                grad2yy_mx_local[i] = grad2yy_mx[ir];
+                grad2zz_mx_local[i] = grad2zz_mx[ir];
+                grad2xy_mx_local[i] = grad2xy_mx[ir];
+                grad2yz_mx_local[i] = grad2yz_mx[ir];
+                grad2xz_mx_local[i] = grad2xz_mx[ir];
+                grad2xx_my_local[i] = grad2xx_my[ir];
+                grad2yy_my_local[i] = grad2yy_my[ir];
+                grad2zz_my_local[i] = grad2zz_my[ir];
+                grad2xy_my_local[i] = grad2xy_my[ir];
+                grad2yz_my_local[i] = grad2yz_my[ir];
+                grad2xz_my_local[i] = grad2xz_my[ir];
+                grad2xx_mz_local[i] = grad2xx_mz[ir];
+                grad2yy_mz_local[i] = grad2yy_mz[ir];
+                grad2zz_mz_local[i] = grad2zz_mz[ir];
+                grad2xy_mz_local[i] = grad2xy_mz[ir];
+                grad2yz_mz_local[i] = grad2yz_mz[ir];
+                grad2xz_mz_local[i] = grad2xz_mz[ir];
+                grad3xxx_n_local[i] = grad3xxx_n[ir];
+                grad3xxy_n_local[i] = grad3xxy_n[ir];
+                grad3xxz_n_local[i] = grad3xxz_n[ir];
+                grad3xyy_n_local[i] = grad3xyy_n[ir];
+                grad3xyz_n_local[i] = grad3xyz_n[ir];
+                grad3xzz_n_local[i] = grad3xzz_n[ir];
+                grad3yyy_n_local[i] = grad3yyy_n[ir];
+                grad3yyz_n_local[i] = grad3yyz_n[ir];
+                grad3yzz_n_local[i] = grad3yzz_n[ir];
+                grad3zzz_n_local[i] = grad3zzz_n[ir];
+                grad3xxx_mx_local[i] = grad3xxx_mx[ir];
+                grad3xxy_mx_local[i] = grad3xxy_mx[ir];
+                grad3xxz_mx_local[i] = grad3xxz_mx[ir];
+                grad3xyy_mx_local[i] = grad3xyy_mx[ir];
+                grad3xyz_mx_local[i] = grad3xyz_mx[ir];
+                grad3xzz_mx_local[i] = grad3xzz_mx[ir];
+                grad3yyy_mx_local[i] = grad3yyy_mx[ir];
+                grad3yyz_mx_local[i] = grad3yyz_mx[ir];
+                grad3yzz_mx_local[i] = grad3yzz_mx[ir];
+                grad3zzz_mx_local[i] = grad3zzz_mx[ir];
+                grad3xxx_my_local[i] = grad3xxx_my[ir];
+                grad3xxy_my_local[i] = grad3xxy_my[ir];
+                grad3xxz_my_local[i] = grad3xxz_my[ir];
+                grad3xyy_my_local[i] = grad3xyy_my[ir];
+                grad3xyz_my_local[i] = grad3xyz_my[ir];
+                grad3xzz_my_local[i] = grad3xzz_my[ir];
+                grad3yyy_my_local[i] = grad3yyy_my[ir];
+                grad3yyz_my_local[i] = grad3yyz_my[ir];
+                grad3yzz_my_local[i] = grad3yzz_my[ir];
+                grad3zzz_my_local[i] = grad3zzz_my[ir];
+                grad3xxx_mz_local[i] = grad3xxx_mz[ir];
+                grad3xxy_mz_local[i] = grad3xxy_mz[ir];
+                grad3xxz_mz_local[i] = grad3xxz_mz[ir];
+                grad3xyy_mz_local[i] = grad3xyy_mz[ir];
+                grad3xyz_mz_local[i] = grad3xyz_mz[ir];
+                grad3xzz_mz_local[i] = grad3xzz_mz[ir];
+                grad3yyy_mz_local[i] = grad3yyy_mz[ir];
+                grad3yyz_mz_local[i] = grad3yyz_mz[ir];
+                grad3yzz_mz_local[i] = grad3yzz_mz[ir];
+                grad3zzz_mz_local[i] = grad3zzz_mz[ir];
+            }
+            
+            // Process this chunk with gga_mc
+            std::vector<double> E_MC_local;
+            std::vector<Matrix2x2> V_MC_local;
+            
+            std::tie(E_MC_local, V_MC_local) = NCLibxc::gga_mc(
+                id,
+                n_local, mx_local, my_local, mz_local,
+                gradx_n_local, grady_n_local, gradz_n_local,
+                gradx_mx_local, grady_mx_local, gradz_mx_local,
+                gradx_my_local, grady_my_local, gradz_my_local,
+                gradx_mz_local, grady_mz_local, gradz_mz_local,
+                grad2xx_n_local, grad2yy_n_local, grad2zz_n_local, grad2xy_n_local, grad2yz_n_local, grad2xz_n_local,
+                grad2xx_mx_local, grad2yy_mx_local, grad2zz_mx_local, grad2xy_mx_local, grad2yz_mx_local, grad2xz_mx_local,
+                grad2xx_my_local, grad2yy_my_local, grad2zz_my_local, grad2xy_my_local, grad2yz_my_local, grad2xz_my_local,
+                grad2xx_mz_local, grad2yy_mz_local, grad2zz_mz_local, grad2xy_mz_local, grad2yz_mz_local, grad2xz_mz_local,
+                grad3xxx_n_local, grad3xxy_n_local, grad3xxz_n_local, grad3xyy_n_local, grad3xyz_n_local, grad3xzz_n_local,
+                grad3yyy_n_local, grad3yyz_n_local, grad3yzz_n_local, grad3zzz_n_local, grad3xxx_mx_local, grad3xxy_mx_local, grad3xxz_mx_local,
+                grad3xyy_mx_local, grad3xyz_mx_local, grad3xzz_mx_local,
+                grad3yyy_mx_local, grad3yyz_mx_local, grad3yzz_mx_local, grad3zzz_mx_local,
+                grad3xxx_my_local, grad3xxy_my_local, grad3xxz_my_local, grad3xyy_my_local, grad3xyz_my_local, grad3xzz_my_local,
+                grad3yyy_my_local, grad3yyz_my_local, grad3yzz_my_local, grad3zzz_my_local,
+                grad3xxx_mz_local, grad3xxy_mz_local, grad3xxz_mz_local, grad3xyy_mz_local, grad3xyz_mz_local, grad3xzz_mz_local,
+                grad3yyy_mz_local, grad3yyz_mz_local, grad3yzz_mz_local, grad3zzz_mz_local
+            );
+            
+            // Copy results back to shared arrays
+            for (int i = 0; i < chunk_size; i++) {
+                int ir = start + i;
+                E_MC[ir] = E_MC_local[i];
+                V_MC[ir] = V_MC_local[i];
+            }
+        }
+    }
+    #else
+    // Non-parallel version
+    std::tie(E_MC, V_MC) = NCLibxc::gga_mc(
+        id, 
+        n, mx, my, mz,
+        gradx_n, grady_n, gradz_n,
+        gradx_mx, grady_mx, gradz_mx,
+        gradx_my, grady_my, gradz_my,
+        gradx_mz, grady_mz, gradz_mz,
+        grad2xx_n, grad2yy_n, grad2zz_n, grad2xy_n, grad2yz_n, grad2xz_n,
+        grad2xx_mx, grad2yy_mx, grad2zz_mx, grad2xy_mx, grad2yz_mx, grad2xz_mx,
+        grad2xx_my, grad2yy_my, grad2zz_my, grad2xy_my, grad2yz_my, grad2xz_my,
+        grad2xx_mz, grad2yy_mz, grad2zz_mz, grad2xy_mz, grad2yz_mz, grad2xz_mz,
+        grad3xxx_n, grad3xxy_n, grad3xxz_n, grad3xyy_n, grad3xyz_n, grad3xzz_n,
+        grad3yyy_n, grad3yyz_n, grad3yzz_n, grad3zzz_n,
+        grad3xxx_mx, grad3xxy_mx, grad3xxz_mx, grad3xyy_mx, grad3xyz_mx, grad3xzz_mx,
+        grad3yyy_mx, grad3yyz_mx, grad3yzz_mx, grad3zzz_mx,
+        grad3xxx_my, grad3xxy_my, grad3xxz_my, grad3xyy_my, grad3xyz_my, grad3xzz_my,
+        grad3yyy_my, grad3yyz_my, grad3yzz_my, grad3zzz_my,
+        grad3xxx_mz, grad3xxy_mz, grad3xxz_mz, grad3xyy_mz, grad3xyz_mz, grad3xzz_mz,
+        grad3yyy_mz, grad3yyz_mz, grad3yzz_mz, grad3zzz_mz
+    );
+    #endif
 
              if (PARAM.inp.xc_torque){
                 std::vector<double> torque_tmp = NCLibxc::gga_torque(
